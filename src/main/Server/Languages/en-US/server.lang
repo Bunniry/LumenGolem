@@ -9,6 +9,7 @@ customUI.golemPage.instructions = "Instructions"
 customUI.golemPage.variables = "Variables"
 
 items.LumenGolemItem.name = "Lumen Golem"
-items.LumenGolemItem.description = "Right-Click to deploy the Lumen Golem.\nRight-Click the Lumen Golem to modify its behavior.\n\n\"It is exceptionally endearing how these little creatures use my creativity for their own little needs! How adorable!\" - The writings of the Lost Avatar Estea"
+items.LumenGolemItem.description = "Right-Click to deploy the Lumen Golem.\nPress F while facing the Lumen Golem to modify its behavior.\n\n\"It is exceptionally endearing how these little creatures use my creativity for their own little needs! How adorable!\" - The writings of the Lost Avatar Estea"
 items.LumenVectorSelector.name = "Vector Selector"
 items.LumenVectorSelector.description = "Left-Click to save a vector to be recorded next you modify a golem.\nRight-Click to clear all saved vectors.\n\n\"Of course, me, being an Avatar, must share with them this little secret to unlocking their creativity!\" - The writings of the Lost Avatar Estea"
+
