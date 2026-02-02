@@ -1,0 +1,192 @@
+{
+  "Type": "Abstract",
+  "StartState": "Activate",
+  "Parameters": {
+    "Appearance": {
+      "Value": "Bear_Grizzly",
+      "Description": "Model to be used"
+    },
+    "DropList": {
+      "Value": "Empty",
+      "Description": "Drop Items"
+    },
+    "MaxHealth": {
+      "Value": 100,
+      "Description": "Max health for the NPC"
+    },
+    "IsMemory": {
+      "Value": false,
+      "Description": "Defines if the NPC is a memory"
+    },
+    "MemoriesCategory": {
+      "Value": "Other",
+      "Description": "Defines the category of the memory"
+    },
+    "MemoriesNameOverride": {
+      "Value": "",
+      "Description": "Overrides the memory name if set"
+    },
+    "NameTranslationKey": {
+      "Value": "server.npcRoles.Template.name",
+      "Description": "Translation key for NPC name display"
+    },
+    "MinHeightOverGround": {
+      "Value": 1,
+      "Description": "Min Height over ground"
+    },
+    "MaxHeightOverGround": {
+      "Value": 35,
+      "Description": "Max Height over ground"
+    }
+  },
+  "IsMemory": {
+    "Compute": "IsMemory"
+  },
+  "MemoriesCategory": {
+    "Compute": "MemoriesCategory"
+  },
+  "MemoriesNameOverride": {
+    "Compute": "MemoriesNameOverride"
+  },
+  "Appearance": {
+    "Compute": "Appearance"
+  },
+  "DropList": {
+    "Compute": "DropList"
+  },
+  "DisableDamageGroups": [
+    "Player"
+  ],
+  "Invulnerable": true,
+  "KnockbackScale": 1,
+  "MotionControllerList": [
+    {
+      "Type": "Fly",
+      "MaxHorizontalSpeed": 20,
+      "MaxSinkSpeed": 10,
+      "MaxClimbSpeed": 10,
+      "MinAirSpeed": 0,
+      "Acceleration": 5,
+      "MinHeightOverGround": {
+        "Compute": "MinHeightOverGround"
+      },
+      "MaxHeightOverGround": {
+        "Compute": "MaxHeightOverGround"
+      },
+      "MaxRollAngle": 180,
+      "MaxTurnSpeed": 360
+    }
+  ],
+  "MaxHealth": {
+    "Compute": "MaxHealth"
+  },
+  "Instructions": [
+    {
+      "Instructions": [
+
+        {
+          "Sensor": {
+            "Type": "State",
+            "State": "Activate"
+          },
+          "BodyMotion": {
+            "Type": "Nothing"
+          },
+          "Actions": [
+            {
+              "Type": "PlayAnimation",
+              "Slot": "Status",
+              "Animation": "Activate",
+              "Actions": [
+                {
+                  "Type": "Timeout",
+                  "Delay": [
+                    0,
+                    0
+                  ],
+                  "Actions": [
+                    {
+                      "Weight": 0,
+                      "Type": "State",
+                      "State": "Idle"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Sensor": {
+            "Type": "State",
+            "State": "Idle"
+          },
+          "BodyMotion": {
+            "Type": "Nothing"
+          },
+          "Actions": [
+            {
+              "Weight": 100,
+              "Type": "PlayAnimation",
+              "Slot": "Status",
+              "Animation": "Idle"
+            },
+            {
+
+              "Weight": 0,
+              "Type": "State",
+              "State": "Idle"
+            }
+          ]
+        },
+        {
+          "Sensor": {
+            "Type": "State",
+            "State": "Walk"
+          },
+          "BodyMotion": {
+            "Type": "Nothing"
+          },
+          "Actions": [
+            {
+              "Type": "PlayAnimation",
+              "Slot": "Status",
+              "Animation": "Walk"
+            },
+            {
+
+              "Weight": 0,
+              "Type": "State",
+              "State": "Walk"
+            }
+          ]
+        },
+        {
+          "Sensor": {
+            "Type": "State",
+            "State": "Chop"
+          },
+          "BodyMotion": {
+            "Type": "Nothing"
+          },
+          "Actions": [
+            {
+              "Type": "PlayAnimation",
+              "Slot": "Status",
+              "Animation": "Chop"
+            },
+            {
+
+              "Weight": 0,
+              "Type": "State",
+              "State": "Chop"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "NameTranslationKey": {
+    "Compute": "NameTranslationKey"
+  }
+}

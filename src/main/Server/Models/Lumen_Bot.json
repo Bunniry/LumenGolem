@@ -1,0 +1,80 @@
+{
+  "Model": "NPC/Lumen_Bot.blockymodel",
+  "HitBox": {
+    "Max": {
+      "X": 0.2,
+      "Y": 1.1,
+      "Z": 0.2
+    },
+    "Min": {
+      "X": -0.2,
+      "Y": 0,
+      "Z": -0.2
+    }
+  },
+  "Texture": "NPC/LumenBot.png",
+  "EyeHeight": 1.2,
+  "AnimationSets": {
+    "Idle": {
+      "Animations": [
+        {
+          "Animation": "NPC/Idle.blockyanim",
+          "Looping": true
+        }
+      ]
+    },
+    "Walk": {
+      "Animations": [
+        {
+          "Animation": "NPC/Walk.blockyanim",
+          "Looping": true
+        }
+      ]
+    },
+    "Chop": {
+      "Animations": [
+        {
+          "Looping": true,
+          "Animation": "NPC/Chop.blockyanim"
+        }
+      ]
+    },
+    "Pick": {
+      "Animations": [
+        {
+          "Animation": "NPC/Pick.blockyanim"
+        }
+      ]
+    },
+    "Rummage": {
+      "Animations": [
+        {
+          "Animation": "NPC/Rummage.blockyanim"
+        }
+      ]
+    },
+    "Water": {
+      "Animations": [
+        {
+          "Animation": "NPC/Water.blockyanim"
+        }
+      ]
+    },
+    "Activate": {
+      "Animations": [
+        {
+          "Animation": "NPC/Activate.blockyanim",
+          "Looping": false
+        }
+      ]
+    },
+    "Deactivate": {
+      "Animations": [
+        {
+          "Animation": "NPC/Deactivate.blockyanim",
+          "Looping": false
+        }
+      ]
+    }
+  }
+}

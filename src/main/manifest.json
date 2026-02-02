@@ -1,0 +1,22 @@
+{
+    "Group": "Bunnir",
+    "Name": "LumenGolem",
+    "Version": "0.0.2",
+    "Description": "Adds a programmable Lumen Golem.",
+    "Authors": [
+        {
+            "Name": "Bunnir"
+        }
+    ],
+    "Website": "",
+    "ServerVersion": "*",
+    "Dependencies": {
+        "Hytale:BlockModule": "*"
+    },
+    "OptionalDependencies": {
+        
+    },
+    "DisabledByDefault": false,
+    "Main": "com.bunnir.plugin.LumenGolem",
+    "IncludesAssetPack": true
+}

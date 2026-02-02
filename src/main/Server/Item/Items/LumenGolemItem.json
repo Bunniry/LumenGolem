@@ -1,0 +1,27 @@
+{
+  "Model": "NPC/Lumen_Bot_Item.blockymodel",
+  "Texture": "NPC/Lumen_Bot_Item.png",
+  "PlayerAnimationsId": {
+    "Parent": "Item"
+  },
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        "SpawnLumenGolemInteraction"
+      ]
+    }
+  },
+  "Icon": "Icons/ItemsGenerated/LumenGolemItem.png",
+  "IconProperties": {
+    "Scale": 0.6,
+    "Rotation": [
+      13,
+      164,
+      20
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  }
+}

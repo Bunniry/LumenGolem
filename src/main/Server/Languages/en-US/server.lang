@@ -1,0 +1,7 @@
+interactionHints.Lumen_OpenGolem = "Press [{key}] to Open Golem"
+customUI.golemPage.newFunctionButton = "New Function"
+customUI.golemPage.newVariableButton = "New Variable"
+customUI.golemPage.deleteButton = "Delete"
+customUI.golemPage.title = "Modify Golem"
+customUI.golemPage.noFunctions = "Return"
+customUI.golemPage.noVariables = "No Variables"

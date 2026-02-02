@@ -1,0 +1,16 @@
+{
+  "Model": "Items/SelectedVector.blockymodel",
+  "Texture": "Items/Selector.png",
+  "HitBox": {
+    "Max": {
+      "X": -499,
+      "Y": -499,
+      "Z": -499
+    },
+    "Min": {
+      "X": -500,
+      "Y": -500,
+      "Z": -500
+    }
+  }
+}
