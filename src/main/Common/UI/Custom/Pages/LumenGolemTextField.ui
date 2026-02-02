@@ -1,0 +1,23 @@
+$Common = "Ripped/Common.ui";
+$Label = "Ripped/Label.ui";
+$SectionContainer = "Ripped/SectionContainer.ui";
+
+@CustomStyle = TextButtonStyle(
+  Default: (Background: $C.@DefaultSquareButtonDefaultBackground, LabelStyle: @CustomLabelStyle),
+  Hovered: (Background: $C.@DefaultSquareButtonHoveredBackground, LabelStyle: @CustomLabelStyle),
+  Pressed: (Background: $C.@DefaultSquareButtonPressedBackground, LabelStyle: @CustomLabelStyle),
+  Disabled: (Background: $C.@DefaultSquareButtonDisabledBackground, LabelStyle: @CustomLabelStyle),
+  Sounds: $C.@ButtonSounds,
+);
+
+Group {
+  LayoutMode: Left;
+
+  Anchor: (Right: 0, Left: 2, Top: 0, Height: 40, Width: 450);
+  TextField #Text {
+    Anchor: (Right: 0, Left: 0, Top: 0, Height: 35, Width: 450);
+    Background: (PatchStyle(TexturePath: "Ripped/Common/Dropdown.png"));
+    Padding: (Full: 6);
+    Style: (RenderBold: true);
+  }
+}

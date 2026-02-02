@@ -1,0 +1,92 @@
+$C = "Common.ui";
+
+$C.@PageOverlay {}
+
+
+@ActionButtonWidth = 30;
+@ActionButtonIconSize = 24;
+
+$C.@DecoratedContainer {
+  Anchor: (Width: 1200, Height: 800);
+
+  #Title {
+    Group {
+      $C.@Title #TitleLabel {
+        @Text = %server.customUI.golemPage.title;
+      }
+    }
+    Button #NewVariableButton {
+      Anchor: (Width: @ActionButtonIconSize, Right: 20 + @ActionButtonWidth);
+      TooltipText: %server.customUI.golemPage.newVariableButton;
+      Style: (
+        Hovered: (
+          Background: #000000(0.2),
+        )
+      );
+
+      Group {
+        Anchor: (Width: @ActionButtonIconSize, Height: @ActionButtonIconSize);
+        Background: (TexturePath: "VariableSymbol.png");
+      }
+    }
+    Button #NewFunctionButton {
+      Anchor: (Width: @ActionButtonIconSize, Right: 20 + 2 * @ActionButtonWidth);
+      TooltipText: %server.customUI.golemPage.newFunctionButton;
+      Style: (
+        Hovered: (
+          Background: #000000(0.2),
+        )
+      );
+
+      Group {
+        Anchor: (Width: @ActionButtonIconSize, Height: @ActionButtonIconSize);
+        Background: (TexturePath: "FunctionSymbol.png");
+      }
+    }
+  }
+
+  #Content {
+    Group {
+
+      LayoutMode: CenterMiddle;
+
+      $C.@DecoratedContainer {
+        Anchor: (Width: 550, Height: 700, Right: 10);
+        #Title {
+          Group {
+            $C.@Title #TitleLabel {
+              @Text = %server.customUI.golemPage.instructions;
+            }
+          }
+        }
+        #Content {
+          Group #ListInstructions {
+            FlexWeight: 1;
+            LayoutMode: TopScrolling;
+            ScrollbarStyle: $C.@DefaultScrollbarStyle;
+          }
+        }
+      }
+
+      $C.@DecoratedContainer {
+        Anchor: (Width: 550, Height: 700, Left: 10);
+        #Title {
+          Group {
+            $C.@Title #TitleLabel {
+              @Text = %server.customUI.golemPage.variables;
+            }
+          }
+        }
+        #Content {
+          Group #ListVariables {
+            FlexWeight: 1;
+            LayoutMode: TopScrolling;
+            ScrollbarStyle: $C.@DefaultScrollbarStyle;
+          }
+        }
+      }
+    }
+  }
+}
+
+$C.@BackButton {}
