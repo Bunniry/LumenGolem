@@ -43,5 +43,26 @@
         }
       ]
     }
+  },
+  "Recipe": {
+    "BenchRequirement": [
+      {
+        "Id": "Arcanebench",
+        "Categories": [
+          "Arcane_Misc"
+        ]
+      }
+    ],
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "Quantity": 2,
+        "ItemId": "Rock_Marble"
+      },
+      {
+        "ItemId": "Ingredient_Crystal_Cyan",
+        "Quantity": 1
+      }
+    ]
   }
 }
