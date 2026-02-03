@@ -177,7 +177,7 @@ public class LumenInstruction {
             }
             case DISTANCE -> {
                 if (thisGolem.validateValue(Pointers[0], LumenGolemComponent.Type_Codec.POS) && thisGolem.validateValue(Pointers[1], LumenGolemComponent.Type_Codec.POS))
-                    thisGolem.setValue(((Vector3d) thisGolem.getValue(Pointers[0])).distanceTo((Vector3d) thisGolem.getValue(Pointers[1])), Pointers[2], LumenGolemComponent.Type_Codec.FLOAT);
+                    thisGolem.setValue((float)((Vector3d) thisGolem.getValue(Pointers[0])).distanceTo((Vector3d) thisGolem.getValue(Pointers[1])), Pointers[2], LumenGolemComponent.Type_Codec.FLOAT);
                 else
                     return -2;
                 return Pointers[3];

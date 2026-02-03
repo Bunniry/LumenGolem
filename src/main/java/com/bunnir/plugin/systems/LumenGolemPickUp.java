@@ -105,7 +105,7 @@ public class LumenGolemPickUp extends EntityTickingSystem<EntityStore> {
 
                 Vector3d itemEntityPosition = transformComponent.getPosition();
                 DespawnComponent despawnComponent = (DespawnComponent)archetypeChunk.getComponent(index, DespawnComponent.getComponentType());
-                float pickupRadius = itemComponent.getPickupRadius(commandBuffer);
+                float pickupRadius = itemComponent.getPickupRadius(commandBuffer) * 10;
                 ItemStack itemStack = itemComponent.getItemStack();
                 Item item = itemStack.getItem();
                 String interactions = (String)item.getInteractions().get(InteractionType.Pickup);

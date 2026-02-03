@@ -892,6 +892,12 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                 .append(new KeyedCodec<>("@V4", Codec.STRING),
                         (data, value) -> data.Variables[3] = value,
                         data -> data.Variables[3]).add()
+                .append(new KeyedCodec<>("@V5", Codec.STRING),
+                        (data, value) -> data.Variables[4] = value,
+                        data -> data.Variables[4]).add()
+                .append(new KeyedCodec<>("@V6", Codec.STRING),
+                        (data, value) -> data.Variables[5] = value,
+                        data -> data.Variables[5]).add()
                 .build();
 
 

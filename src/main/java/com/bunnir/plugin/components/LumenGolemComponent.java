@@ -57,6 +57,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Vector;
 
 public class LumenGolemComponent implements Component<EntityStore> {
 
@@ -189,8 +190,10 @@ public class LumenGolemComponent implements Component<EntityStore> {
     }
 
     boolean PerformedAction = false;
+    boolean DoubleAction = false;
     public void RunAllInstructions(Ref<EntityStore> ent, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
         PerformedAction = false;
+        DoubleAction = false;
         if(outOfCommision > 0) {
             outOfCommision--;
             return;
@@ -209,13 +212,13 @@ public class LumenGolemComponent implements Component<EntityStore> {
             if(nextInstruction >= 0) {
                 instRanCount[nextInstruction] = instRanCount[nextInstruction] + 1;
                 if (instRanCount[nextInstruction] == 30)
-                    return; //stack overflow error
+                    break;
             }
         }
         SetNPCState(ent);
 
         TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
-        if(nextInstruction == -2) {
+        if(nextInstruction == -2 || DoubleAction) {
             outOfCommision = 30;
             ComponentAccessor<EntityStore> componentAccessor = store;
             SpatialResource<Ref<EntityStore>, EntityStore> playerSpatialResource = (SpatialResource) componentAccessor.getResource(EntityModule.get().getPlayerSpatialResourceType());
@@ -235,7 +238,10 @@ public class LumenGolemComponent implements Component<EntityStore> {
     //Time is running short, have no time to dig through 10000000 lines of code to find API. Enjoy this buggy mess.
 
     public boolean BreakBlock(Ref<EntityStore> ent, Vector3d value, int tool, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
-        if(PerformedAction) return false;
+        if(PerformedAction) {
+            DoubleAction = true;
+            return false;
+        }
 
         TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
         if(value.distanceTo(transformComponent.getPosition()) > 1.5)
@@ -282,7 +288,10 @@ public class LumenGolemComponent implements Component<EntityStore> {
     }
 
     public boolean HarvestBlock(Ref<EntityStore> ent, Vector3d value, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
-        if(PerformedAction) return false;
+        if(PerformedAction) {
+            DoubleAction = true;
+            return false;
+        }
 
         TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
         if(value.distanceTo(transformComponent.getPosition()) > 1.5)
@@ -297,7 +306,8 @@ public class LumenGolemComponent implements Component<EntityStore> {
         Vector3i targetBlock = value.toVector3i();
         BlockType blockType = world.getBlockType(targetBlock.x, targetBlock.y, targetBlock.z);
         String hint = blockType.getInteractionHint();
-        if(blockType.getId().equals("Empty") || hint == null || !hint.equals("server.interactionHints.gather")) {
+        if(blockType.getId().equals("Empty") || hint == null ||
+                (!hint.equals("server.interactionHints.gather") && !hint.equals("server.interactionHints.harvest"))) {
             QueuedState = "Idle";
             return true;
         }
@@ -325,7 +335,10 @@ public class LumenGolemComponent implements Component<EntityStore> {
     }
 
     public boolean DumpAllInChest(Ref<EntityStore> ent, Vector3d value, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
-        if(PerformedAction) return false;
+        if(PerformedAction) {
+            DoubleAction = true;
+            return false;
+        }
 
         TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
         if(value.distanceTo(transformComponent.getPosition()) > 1.5)
@@ -376,7 +389,10 @@ public class LumenGolemComponent implements Component<EntityStore> {
 
 
     public boolean TakeAllFromChest(Ref<EntityStore> ent, Vector3d value, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
-        if(PerformedAction) return false;
+        if(PerformedAction) {
+            DoubleAction = true;
+            return false;
+        }
 
         TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
         if(value.distanceTo(transformComponent.getPosition()) > 1.5)
@@ -416,7 +432,10 @@ public class LumenGolemComponent implements Component<EntityStore> {
     }
 
     public void DropAllItems(Ref<EntityStore> ent, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
-        if(PerformedAction) return;
+        if(PerformedAction) {
+            DoubleAction = true;
+            return;
+        }
         PerformedAction = true;
         TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
 
@@ -447,7 +466,10 @@ public class LumenGolemComponent implements Component<EntityStore> {
     }
 
     public void TravelToBlock(Ref<EntityStore> ent, Vector3d value, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
-        if(PerformedAction) return;
+        if(PerformedAction) {
+            DoubleAction = true;
+            return;
+        }
         PerformedAction = true;
         TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
 
@@ -502,7 +524,9 @@ public class LumenGolemComponent implements Component<EntityStore> {
 
         if(Velocity.x != 0 && Velocity.y != 0 && Velocity.z != 0) {
             result = new CollisionResult();
-            CollisionModule.findBlockCollisionsShortDistance(store.getExternalData().getWorld(), box.getBoundingBox(), transformComponent.getPosition(), Velocity, result);
+            Vector3d timesTwo = new Vector3d(Velocity);
+            timesTwo = timesTwo.scale(2);
+            CollisionModule.findBlockCollisionsShortDistance(store.getExternalData().getWorld(), box.getBoundingBox(), transformComponent.getPosition(), timesTwo, result);
 
             for (int i = 0; i < result.getBlockCollisionCount(); i++) {
                 if (result.getBlockCollision(i).blockId != Integer.MIN_VALUE) { //im done with normals
