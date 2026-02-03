@@ -1,4 +1,6 @@
 Made for the Hytale Mod Jam
 Code looks bad. Beware.
 
-Right Click a Lumen Bot to modify it. I don't know why the interactable isn't showing up, I think Hytale is just bugged.
+Press F when looking at a Lumen Golem to modify it.
+
+Ripped folder in Common contains Hytale assets. Move to Custom/Pages. It has like >100 files so I cannot move it.
