@@ -3,51 +3,60 @@ package com.bunnir.plugin.components;
 import com.bunnir.plugin.LumenGolem;
 import com.bunnir.plugin.jsonassets.LumenInstruction;
 import com.bunnir.plugin.jsonassets.Vector3dSerializable;
-import com.hypixel.hytale.builtin.path.path.TransientPath;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.EnumCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
 import com.hypixel.hytale.component.*;
-import com.hypixel.hytale.math.block.BlockUtil;
+import com.hypixel.hytale.component.spatial.SpatialResource;
 import com.hypixel.hytale.math.util.ChunkUtil;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.math.vector.Vector3i;
-import com.hypixel.hytale.protocol.ChangeVelocityType;
-import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.protocol.Color;
+import com.hypixel.hytale.protocol.InteractionType;
+import com.hypixel.hytale.protocol.packets.inventory.SmartMoveItemStack;
 import com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType;
-import com.hypixel.hytale.server.core.asset.type.item.config.ItemTool;
-import com.hypixel.hytale.server.core.asset.type.item.config.ItemToolSpec;
-import com.hypixel.hytale.server.core.entity.EntityUtils;
-import com.hypixel.hytale.server.core.event.events.ecs.DamageBlockEvent;
-import com.hypixel.hytale.server.core.modules.blockhealth.BlockHealthChunk;
+import com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent;
+import com.hypixel.hytale.server.core.entity.ItemUtils;
+import com.hypixel.hytale.server.core.inventory.Inventory;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
+import com.hypixel.hytale.server.core.inventory.container.ItemContainerUtil;
+import com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer;
+import com.hypixel.hytale.server.core.inventory.transaction.ActionType;
+import com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction;
+import com.hypixel.hytale.server.core.inventory.transaction.ListTransaction;
+import com.hypixel.hytale.server.core.inventory.transaction.SlotTransaction;
 import com.hypixel.hytale.server.core.modules.collision.CollisionModule;
 import com.hypixel.hytale.server.core.modules.collision.CollisionResult;
+import com.hypixel.hytale.server.core.modules.entity.EntityModule;
 import com.hypixel.hytale.server.core.modules.entity.component.BoundingBox;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.interaction.BlockHarvestUtils;
-import com.hypixel.hytale.server.core.modules.interaction.BlockInteractionUtils;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.BreakBlockInteraction;
-import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.DamageEntityInteraction;
-import com.hypixel.hytale.server.core.modules.physics.component.Velocity;
-import com.hypixel.hytale.server.core.modules.splitvelocity.VelocityConfig;
-import com.hypixel.hytale.server.core.universe.Universe;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.AddItemInteraction;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.OpenContainerInteraction;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.RefillContainerInteraction;
+import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
+import com.hypixel.hytale.server.core.universe.world.SoundUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk;
-import com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection;
+import com.hypixel.hytale.server.core.universe.world.meta.BlockState;
+import com.hypixel.hytale.server.core.universe.world.meta.state.ItemContainerState;
 import com.hypixel.hytale.server.core.universe.world.storage.ChunkStore;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import it.unimi.dsi.fastutil.Pair;
+import com.hypixel.hytale.server.npc.role.support.StateSupport;
+import com.hypixel.hytale.server.npc.util.InventoryHelper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import javax.annotation.Nonnull;
 import java.io.*;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Vector;
 
 public class LumenGolemComponent implements Component<EntityStore> {
 
@@ -179,8 +188,13 @@ public class LumenGolemComponent implements Component<EntityStore> {
         NPC.getRole().getStateSupport().setState(ent, QueuedState, null, store);
     }
 
+    boolean PerformedAction = false;
     public void RunAllInstructions(Ref<EntityStore> ent, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
-
+        PerformedAction = false;
+        if(outOfCommision > 0) {
+            outOfCommision--;
+            return;
+        }
         NPCEntity npcComponent;
         npcComponent = store.getComponent(ent, Objects.requireNonNull(NPCEntity.getComponentType()));
         npcComponent.getInventory().setActiveHotbarSlot((byte) 0);
@@ -199,19 +213,37 @@ public class LumenGolemComponent implements Component<EntityStore> {
             }
         }
         SetNPCState(ent);
+
+        TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
+        if(nextInstruction == -2) {
+            outOfCommision = 30;
+            ComponentAccessor<EntityStore> componentAccessor = store;
+            SpatialResource<Ref<EntityStore>, EntityStore> playerSpatialResource = (SpatialResource) componentAccessor.getResource(EntityModule.get().getPlayerSpatialResourceType());
+            ObjectList<Ref<EntityStore>> playerRefs = SpatialResource.getThreadLocalReferenceList();
+            playerSpatialResource.getSpatialStructure().collect(transformComponent.getPosition(), (double) 75.0F, playerRefs);
+            ParticleUtil.spawnParticleEffect("Lumen_Error_Smoke", transformComponent.getPosition().getX(), transformComponent.getPosition().getY(), transformComponent.getPosition().getZ(), 0, 0, 0, 1,
+                    new Color((byte) 150, (byte) 50, (byte) 50), (Ref) null, playerRefs, componentAccessor);
+
+            SoundUtil.playSoundEvent3d(null, SoundEvent.getAssetMap().getIndex("SFX_Window_Break"), transformComponent.getPosition().getX(), transformComponent.getPosition().getY(), transformComponent.getPosition().getZ(), store);
+        }
+
     }
 
     Vector3d Velocity = new Vector3d(0, 0, 0);
-    int hitCooldown = 5;
+    int hitCooldown = 10;
+    int outOfCommision = 0;
     //Time is running short, have no time to dig through 10000000 lines of code to find API. Enjoy this buggy mess.
 
-    public boolean BreakBlock(Ref<EntityStore> ent, Vector3d value, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
+    public boolean BreakBlock(Ref<EntityStore> ent, Vector3d value, int tool, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
+        if(PerformedAction) return false;
+
         TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
         if(value.distanceTo(transformComponent.getPosition()) > 1.5)
         {
             TravelToBlock(ent, value, store, commandBuffer);
             return false;
         }
+        PerformedAction = true;
 
         World world = store.getExternalData().getWorld();
 
@@ -222,11 +254,14 @@ public class LumenGolemComponent implements Component<EntityStore> {
             hitCooldown = 10;
             return true;
         }
+        StateSupport support = store.getComponent(ent, NPCEntity.getComponentType()).getRole().getStateSupport();
+        if(!support.getStateName().equals("Chop.Default"))
+            hitCooldown = 10;
 
 
         NPCEntity npcComponent;
         npcComponent = store.getComponent(ent, Objects.requireNonNull(NPCEntity.getComponentType()));
-        npcComponent.getInventory().setActiveHotbarSlot((byte) 1);
+        npcComponent.getInventory().setActiveHotbarSlot((byte) tool);
 
         hitCooldown = hitCooldown - 1;
         if(hitCooldown <= 0) {
@@ -240,12 +275,180 @@ public class LumenGolemComponent implements Component<EntityStore> {
                     npcComponent.getInventory().getItemInHand().getItem().getTool(), 1, 0,
                     chunkReference,
                     commandBuffer, world.getChunkStore().getStore());
+
         }
         QueuedState = "Chop";
         return false; //Yandere dev! Yandere dev! Whatever, just a 4d modjam, won't be scaled anyway
     }
 
+    public boolean HarvestBlock(Ref<EntityStore> ent, Vector3d value, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
+        if(PerformedAction) return false;
+
+        TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
+        if(value.distanceTo(transformComponent.getPosition()) > 1.5)
+        {
+            TravelToBlock(ent, value, store, commandBuffer);
+            return false;
+        }
+        PerformedAction = true;
+
+        World world = store.getExternalData().getWorld();
+
+        Vector3i targetBlock = value.toVector3i();
+        BlockType blockType = world.getBlockType(targetBlock.x, targetBlock.y, targetBlock.z);
+        String hint = blockType.getInteractionHint();
+        if(blockType.getId().equals("Empty") || hint == null || !hint.equals("server.interactionHints.gather")) {
+            QueuedState = "Idle";
+            return true;
+        }
+        ChunkStore chunkStore = world.getChunkStore();
+        long chunkIndex = ChunkUtil.indexChunkFromBlock(targetBlock.x, targetBlock.z);
+        Ref<ChunkStore> chunkReference = chunkStore.getChunkReference(chunkIndex);
+
+        BlockHarvestUtils.performPickupByInteraction(ent, targetBlock, blockType, 0, chunkReference, store, chunkStore.getStore());
+        QueuedState = "Pick";
+        outOfCommision = 15;
+        return false;
+    }
+
+    public static void DepositAll(ItemContainer c, ItemContainer c2) {
+        List<ItemStack> itemStacks = new ObjectArrayList();
+        itemStacks.addAll(c.dropAllItemStacks());
+        ListTransaction<ItemStackTransaction> transaction = c2.addItemStacks(itemStacks);
+
+        for(ItemStackTransaction stackTransaction : transaction.getList()) {
+            ItemStack remainder = stackTransaction.getRemainder();
+            if (!ItemStack.isEmpty(remainder)) {
+                c.addItemStack(remainder);
+            }
+        }
+    }
+
+    public boolean DumpAllInChest(Ref<EntityStore> ent, Vector3d value, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
+        if(PerformedAction) return false;
+
+        TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
+        if(value.distanceTo(transformComponent.getPosition()) > 1.5)
+        {
+            TravelToBlock(ent, value, store, commandBuffer);
+            return false;
+        }
+        PerformedAction = true;
+
+        World world = store.getExternalData().getWorld();
+
+        Vector3i targetBlock = value.toVector3i();
+        BlockType blockType = world.getBlockType(targetBlock.x, targetBlock.y, targetBlock.z);
+        if(blockType.getId().equals("Empty") || blockType.getInteractionHint() == null) {
+            QueuedState = "Idle";
+            return true;
+        }
+
+        if (world.getState(targetBlock.x, targetBlock.y, targetBlock.z, true) instanceof ItemContainerState) {
+            NPCEntity npcComponent = store.getComponent(ent, Objects.requireNonNull(NPCEntity.getComponentType()));
+            Inventory inventory = npcComponent.getInventory();
+            ItemContainerState itemContainerState = (ItemContainerState) world.getState(targetBlock.x, targetBlock.y, targetBlock.z, true);
+
+            SimpleItemContainer container = (SimpleItemContainer) itemContainerState.getItemContainer();
+            if(container != null) {
+
+
+                inventory.getHotbar().removeItemStackFromSlot((byte)1);
+                inventory.getHotbar().removeItemStackFromSlot((byte)2);
+                inventory.getHotbar().removeItemStackFromSlot((byte)3);
+
+                DepositAll(inventory.getBackpack(), container);
+                DepositAll(inventory.getStorage(), container);
+                DepositAll(inventory.getHotbar(), container);
+
+                inventory.getHotbar().addItemStackToSlot((short) 1, new ItemStack("Tool_Hatchet_Iron", 1).withIncreasedDurability(Integer.MAX_VALUE));
+                inventory.getHotbar().addItemStackToSlot((short) 2, new ItemStack("Tool_Watering_Can", 1).withIncreasedDurability(Integer.MAX_VALUE));
+                inventory.getHotbar().addItemStackToSlot((short) 3, new ItemStack("Tool_Pickaxe_Iron", 1).withIncreasedDurability(Integer.MAX_VALUE));
+            }
+
+
+        }
+
+        QueuedState = "Rummage";
+        outOfCommision = 15;
+        return false;
+    }
+
+
+    public boolean TakeAllFromChest(Ref<EntityStore> ent, Vector3d value, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
+        if(PerformedAction) return false;
+
+        TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
+        if(value.distanceTo(transformComponent.getPosition()) > 1.5)
+        {
+            TravelToBlock(ent, value, store, commandBuffer);
+            return false;
+        }
+        PerformedAction = true;
+
+        World world = store.getExternalData().getWorld();
+
+        Vector3i targetBlock = value.toVector3i();
+        BlockType blockType = world.getBlockType(targetBlock.x, targetBlock.y, targetBlock.z);
+        if(blockType.getId().equals("Empty") || blockType.getInteractionHint() == null) {
+            QueuedState = "Idle";
+            return true;
+        }
+
+        if (world.getState(targetBlock.x, targetBlock.y, targetBlock.z, true) instanceof ItemContainerState) {
+            NPCEntity npcComponent = store.getComponent(ent, Objects.requireNonNull(NPCEntity.getComponentType()));
+            Inventory inventory = npcComponent.getInventory();
+            ItemContainerState itemContainerState = (ItemContainerState) world.getState(targetBlock.x, targetBlock.y, targetBlock.z, true);
+
+            SimpleItemContainer container = (SimpleItemContainer) itemContainerState.getItemContainer();
+            if(container != null) {
+                DepositAll(container, inventory.getHotbar());
+                DepositAll(container, inventory.getStorage());
+                DepositAll(container, inventory.getBackpack());
+            }
+
+
+        }
+
+        QueuedState = "Rummage";
+        outOfCommision = 15;
+        return false;
+    }
+
+    public void DropAllItems(Ref<EntityStore> ent, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
+        if(PerformedAction) return;
+        PerformedAction = true;
+        TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
+
+        NPCEntity npcComponent = store.getComponent(ent, Objects.requireNonNull(NPCEntity.getComponentType()));
+        Inventory inventory = npcComponent.getInventory();
+
+        inventory.getHotbar().removeItemStackFromSlot((byte)1);
+        inventory.getHotbar().removeItemStackFromSlot((byte)2);
+        inventory.getHotbar().removeItemStackFromSlot((byte)3);
+
+
+        List<ItemStack> itemStacks = new ObjectArrayList();
+        itemStacks.addAll(inventory.getStorage().dropAllItemStacks());
+        itemStacks.addAll(inventory.getHotbar().dropAllItemStacks());
+        itemStacks.addAll(inventory.getUtility().dropAllItemStacks());
+        itemStacks.addAll(inventory.getBackpack().dropAllItemStacks()); //not armor
+        commandBuffer.run((s) -> {
+            itemStacks.forEach((o) -> {
+                ItemUtils.dropItem(ent, o, store);
+            });
+        });
+        
+        inventory.getHotbar().addItemStackToSlot((short) 1, new ItemStack("Tool_Hatchet_Iron", 1).withIncreasedDurability(Integer.MAX_VALUE));
+        inventory.getHotbar().addItemStackToSlot((short) 2, new ItemStack("Tool_Watering_Can", 1).withIncreasedDurability(Integer.MAX_VALUE));
+        inventory.getHotbar().addItemStackToSlot((short) 3, new ItemStack("Tool_Pickaxe_Iron", 1).withIncreasedDurability(Integer.MAX_VALUE));
+
+        QueuedState = "Rummage";
+    }
+
     public void TravelToBlock(Ref<EntityStore> ent, Vector3d value, @NonNullDecl Store<EntityStore> store, @NonNullDecl CommandBuffer<EntityStore> commandBuffer) {
+        if(PerformedAction) return;
+        PerformedAction = true;
         TransformComponent transformComponent = store.getComponent(ent, TransformComponent.getComponentType());
 
         BoundingBox box = store.getComponent(ent, BoundingBox.getComponentType());
@@ -315,7 +518,7 @@ public class LumenGolemComponent implements Component<EntityStore> {
         transformComponent.setPosition(Vector3d.add(transformComponent.getPosition(), Velocity));
 
 
-        if(Velocity.length() > 0.1f) {
+        if(Velocity.length() > 0.01f) {
             transformComponent.setRotation(new Vector3f(0, (float) Math.atan2(-Velocity.x, -Velocity.z), 0));
 
         }
@@ -327,7 +530,7 @@ public class LumenGolemComponent implements Component<EntityStore> {
         BOOL((byte) 0),
         FLOAT((byte) 1),
         STRING((byte) 2),
-        BLOCK((byte) 3),
+        //BLOCK((byte) 3),
         POS((byte) 4);
 
         private final byte value;

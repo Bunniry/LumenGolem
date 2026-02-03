@@ -1,6 +1,5 @@
 package com.bunnir.plugin.interactions;
 
-import com.bunnir.plugin.components.LumenGolemComponent;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Ref;
@@ -13,16 +12,12 @@ import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.modules.entity.component.HeadRotation;
-import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
-import com.hypixel.hytale.server.core.modules.entity.player.PlayerItemEntityPickupSystem;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.CooldownHandler;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.client.SimpleBlockInteraction;
 import com.hypixel.hytale.server.core.universe.world.World;
-import com.hypixel.hytale.server.core.universe.world.npc.INonPlayerCharacter;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.entities.NPCEntity;
-import com.hypixel.hytale.server.npc.util.InventoryHelper;
 import it.unimi.dsi.fastutil.Pair;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
@@ -80,7 +75,7 @@ public class SpawnLumenGolemInteraction extends SimpleBlockInteraction {
         if (npcComponent == null)
             return;
         // Initialize inventory size (e.g., 3 rows, 9 columns, 0 offset)
-        npcComponent.setInventorySize(3, 9, 0);
+        npcComponent.setInventorySize(10, 30, 0);
 
         // Add items to the initialized inventory
         addItemsToNPCInventory(npcComponent.getInventory());
@@ -90,11 +85,11 @@ public class SpawnLumenGolemInteraction extends SimpleBlockInteraction {
      */
     public void addItemsToNPCInventory(Inventory inventory) {
         // Add a Thorium Mace to the first slot of the hotbar
-        inventory.getHotbar().addItemStackToSlot((short) 1, new ItemStack("Tool_Hatchet_Iron", 1));
-        inventory.getHotbar().addItemStackToSlot((short) 2, new ItemStack("Tool_Watering_Can", 1));
+        inventory.getHotbar().addItemStackToSlot((short) 1, new ItemStack("Tool_Hatchet_Iron", 1).withIncreasedDurability(Integer.MAX_VALUE));
+        inventory.getHotbar().addItemStackToSlot((short) 2, new ItemStack("Tool_Watering_Can", 1).withIncreasedDurability(Integer.MAX_VALUE));
+        inventory.getHotbar().addItemStackToSlot((short) 3, new ItemStack("Tool_Pickaxe_Iron", 1).withIncreasedDurability(Integer.MAX_VALUE));
 
         // Equip a Thorium Helmet using the InventoryHelper
-        //InventoryHelper.useArmor(inventory.getArmor(), "Armor_Thorium_Head");
 
         // Set the active hotbar slot to the weapon
     }

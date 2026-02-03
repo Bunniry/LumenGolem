@@ -5,13 +5,18 @@ import com.bunnir.plugin.components.LumenParticleSelectorComponent;
 import com.bunnir.plugin.components.LumenPlayerVectorStorageComponent;
 import com.bunnir.plugin.goleminterface.GolemInterfaceSupplier;
 import com.bunnir.plugin.interactions.ClearVectorInteraction;
+import com.bunnir.plugin.interactions.GiveGolemItemInteraction;
 import com.bunnir.plugin.interactions.SelectVectorInteraction;
 import com.bunnir.plugin.interactions.SpawnLumenGolemInteraction;
 import com.bunnir.plugin.systems.LumenGolemInitializer;
+import com.bunnir.plugin.systems.LumenGolemPickUp;
 import com.bunnir.plugin.systems.LumenGolemSystem;
 import com.bunnir.plugin.systems.LumenParticleSelectorSystem;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.server.core.modules.entity.EntityModule;
+import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
+import com.hypixel.hytale.server.core.modules.entity.item.ItemComponent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.OpenCustomUIInteraction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
@@ -46,6 +51,7 @@ public class LumenGolem extends JavaPlugin {
 
 
         this.getCodecRegistry(Interaction.CODEC).register("SpawnLumenGolemInteraction", SpawnLumenGolemInteraction.class, SpawnLumenGolemInteraction.CODEC);
+        this.getCodecRegistry(Interaction.CODEC).register("GiveLumenGolemItemInteraction", GiveGolemItemInteraction.class, GiveGolemItemInteraction.CODEC);
         this.getCodecRegistry(Interaction.CODEC).register("SelectVectorInteraction", SelectVectorInteraction.class, SelectVectorInteraction.CODEC);
         this.getCodecRegistry(Interaction.CODEC).register("ClearVectorInteraction", ClearVectorInteraction.class, ClearVectorInteraction.CODEC);
 
@@ -62,6 +68,7 @@ public class LumenGolem extends JavaPlugin {
         this.getEntityStoreRegistry().registerSystem(new LumenGolemInitializer());
 
         this.getEntityStoreRegistry().registerSystem(new LumenParticleSelectorSystem());
+        this.getEntityStoreRegistry().registerSystem(new LumenGolemPickUp(ItemComponent.getComponentType(), LumenGolemComponent.getComponentType(), EntityModule.get().getEntitySpatialResourceType()));
 
         this.getCodecRegistry(OpenCustomUIInteraction.PAGE_CODEC).register("LumenGolemUI", GolemInterfaceSupplier.class, GolemInterfaceSupplier.CODEC);
 

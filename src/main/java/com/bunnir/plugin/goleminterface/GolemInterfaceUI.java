@@ -2,9 +2,7 @@ package com.bunnir.plugin.goleminterface;
 
 import com.bunnir.plugin.components.LumenGolemComponent;
 import com.bunnir.plugin.jsonassets.LumenInstruction;
-import com.hypixel.hytale.builtin.adventure.teleporter.page.TeleporterSettingsPage;
-import com.hypixel.hytale.builtin.teleport.TeleportPlugin;
-import com.hypixel.hytale.builtin.teleport.Warp;
+import com.hypixel.hytale.builtin.buildertools.scriptedbrushes.ui.ScriptedBrushPage;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
@@ -13,9 +11,6 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime;
 import com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType;
-import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.entity.entities.player.pages.CustomUIPage;
 import com.hypixel.hytale.server.core.entity.entities.player.pages.InteractiveCustomUIPage;
 import com.hypixel.hytale.server.core.ui.DropdownEntryInfo;
 import com.hypixel.hytale.server.core.ui.LocalizableString;
@@ -23,7 +18,6 @@ import com.hypixel.hytale.server.core.ui.builder.EventData;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
@@ -31,7 +25,6 @@ import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.Data> {
     LumenGolemComponent golem;
@@ -257,6 +250,7 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                             golem.instructions[i].Pointers[j]--;
 
                     break;
+                case GETPOSITION:
                 case GOTOBLOCK:
                     for(int j = 0; j < 1; j++)
                         if (golem.instructions[i].Pointers[j] == pointer)
@@ -265,12 +259,25 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                             golem.instructions[i].Pointers[j]--;
 
                     break;
-                case BREAKBLOCK:
+                case CHOPBLOCK:
+                case MINEBLOCK:
+                case HARVESTBLOCK:
+                case DUMPALLINCHEST:
+                case PICKALLFROMCHEST:
+                case GETBLOCKID:
                     for(int j = 0; j < 2; j++)
                         if (golem.instructions[i].Pointers[j] == pointer)
                             golem.instructions[i].Pointers[j] = -1;
                         else if (golem.instructions[i].Pointers[j] > pointer)
                             golem.instructions[i].Pointers[j]--; //Every day we get closer to Yandere Dev. Truly the epitome of coding prowess. If else if if else else...
+
+                case GETVECTORFLOAT:
+                case SETVECTORFLOAT:
+                    for(int j = 0; j < 4; j++)
+                        if (golem.instructions[i].Pointers[j] == pointer)
+                            golem.instructions[i].Pointers[j] = -1;
+                        else if (golem.instructions[i].Pointers[j] > pointer)
+                            golem.instructions[i].Pointers[j]--;
             }
         }
     }
@@ -311,6 +318,7 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                             golem.instructions[i].Pointers[j]--;
 
                     break;
+                case GETPOSITION:
                 case GOTOBLOCK:
                     for(int j = 1; j < 2; j++)
                         if (golem.instructions[i].Pointers[j] == pointer)
@@ -318,8 +326,26 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                         else if (golem.instructions[i].Pointers[j] > pointer)
                             golem.instructions[i].Pointers[j]--;
                     break;
-                case BREAKBLOCK:
+                case CHOPBLOCK:
+                case MINEBLOCK:
+                case HARVESTBLOCK:
+                case DUMPALLINCHEST:
+                case PICKALLFROMCHEST:
+                case GETBLOCKID:
                     for(int j = 2; j < 3; j++)
+                        if (golem.instructions[i].Pointers[j] == pointer)
+                            golem.instructions[i].Pointers[j] = -1;
+                        else if (golem.instructions[i].Pointers[j] > pointer)
+                            golem.instructions[i].Pointers[j]--;
+                case GETVECTORFLOAT:
+                case SETVECTORFLOAT:
+                    for(int j = 4; j < 5; j++)
+                        if (golem.instructions[i].Pointers[j] == pointer)
+                            golem.instructions[i].Pointers[j] = -1;
+                        else if (golem.instructions[i].Pointers[j] > pointer)
+                            golem.instructions[i].Pointers[j]--;
+                case DROPALLITEMS:
+                    for(int j = 0; j < 1; j++)
                         if (golem.instructions[i].Pointers[j] == pointer)
                             golem.instructions[i].Pointers[j] = -1;
                         else if (golem.instructions[i].Pointers[j] > pointer)
@@ -423,7 +449,7 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
             case MODIFY_FUNCTION: {
                 golem.instructions[index] = new LumenInstruction(golem.instructions[index].Name, Value);
                 golem.instructions[index].Pointers = new int[]
-                        {-1, -1, -1, -1};
+                        {-1, -1, -1, -1, -1, -1}; //it is inefficient. yes. no, i do not care.
                 return;
             }
         }
@@ -655,10 +681,31 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                                     .append("@V2", "#ListInstructions[" + i + "] #ListFields[" + 3 + "] #Dropdown.Value"));
                 }
                 break;
-                case BREAKBLOCK:
+                case GETPOSITION:
+                {
+                    FunctionAddVarDropdown("Output Position", i, 0, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddFunctionDropdown("Next Function", i, 1, uiCommandBuilder, uiEventBuilder);
+
+                    uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating,
+                            "#ListInstructions[" + i + "] #SaveButton",
+                            (EventData.of("Button", "SaveFunction"))
+                                    .append("FuncIndex", Integer.toString(i))
+                                    .append("RIndex", Integer.toString(1))
+                                    .append("@Name", "#ListInstructions[" + i + "] #ListFields[" + 0 + "] #Text.Value")
+                                    .append("@V1", "#ListInstructions[" + i + "] #ListFields[" + 2 + "] #Dropdown.Value")
+                                    .append("@V2", "#ListInstructions[" + i + "] #ListFields[" + 3 + "] #Dropdown.Value"));
+                }
+                break;
+                case CHOPBLOCK:
+                case MINEBLOCK:
+                case HARVESTBLOCK:
+                case DUMPALLINCHEST:
+                case PICKALLFROMCHEST:
+                case GETBLOCKID:
+
                 {
                     FunctionAddVarDropdown("Block Position", i, 0, uiCommandBuilder, uiEventBuilder);
-                    FunctionAddVarDropdown("Output Block Broken", i, 1, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddVarDropdown("Output Completed", i, 1, uiCommandBuilder, uiEventBuilder);
                     FunctionAddFunctionDropdown("Next Function", i, 2, uiCommandBuilder, uiEventBuilder);
 
                     uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating,
@@ -670,6 +717,62 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                                     .append("@V1", "#ListInstructions[" + i + "] #ListFields[" + 2 + "] #Dropdown.Value")
                                     .append("@V2", "#ListInstructions[" + i + "] #ListFields[" + 3 + "] #Dropdown.Value")
                                     .append("@V3", "#ListInstructions[" + i + "] #ListFields[" + 4 + "] #Dropdown.Value"));
+                }
+                break;
+
+                case DROPALLITEMS:
+                {
+                    FunctionAddFunctionDropdown("Next Function", i, 0, uiCommandBuilder, uiEventBuilder);
+
+                    uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating,
+                            "#ListInstructions[" + i + "] #SaveButton",
+                            (EventData.of("Button", "SaveFunction"))
+                                    .append("FuncIndex", Integer.toString(i))
+                                    .append("RIndex", Integer.toString(0))
+                                    .append("@Name", "#ListInstructions[" + i + "] #ListFields[" + 0 + "] #Text.Value")
+                                    .append("@V1", "#ListInstructions[" + i + "] #ListFields[" + 2 + "] #Dropdown.Value"));
+                }
+                break;
+                case GETVECTORFLOAT:
+                {
+                    FunctionAddVarDropdown("Vector", i, 0, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddVarDropdown("Output X", i, 1, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddVarDropdown("Output Y", i, 2, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddVarDropdown("Output Z", i, 3, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddFunctionDropdown("Next Function", i, 4, uiCommandBuilder, uiEventBuilder);
+
+                    uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating,
+                            "#ListInstructions[" + i + "] #SaveButton",
+                            (EventData.of("Button", "SaveFunction"))
+                                    .append("FuncIndex", Integer.toString(i))
+                                    .append("RIndex", Integer.toString(4))
+                                    .append("@Name", "#ListInstructions[" + i + "] #ListFields[" + 0 + "] #Text.Value")
+                                    .append("@V1", "#ListInstructions[" + i + "] #ListFields[" + 2 + "] #Dropdown.Value")
+                                    .append("@V2", "#ListInstructions[" + i + "] #ListFields[" + 3 + "] #Dropdown.Value")
+                                    .append("@V3", "#ListInstructions[" + i + "] #ListFields[" + 4 + "] #Dropdown.Value")
+                                    .append("@V4", "#ListInstructions[" + i + "] #ListFields[" + 5 + "] #Dropdown.Value")
+                                    .append("@V5", "#ListInstructions[" + i + "] #ListFields[" + 6 + "] #Dropdown.Value"));
+                }
+                break;
+                case SETVECTORFLOAT:
+                {
+                    FunctionAddVarDropdown("Vector", i, 0, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddVarDropdown("Input X", i, 1, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddVarDropdown("Input Y", i, 2, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddVarDropdown("Input Z", i, 3, uiCommandBuilder, uiEventBuilder);
+                    FunctionAddFunctionDropdown("Next Function", i, 4, uiCommandBuilder, uiEventBuilder);
+
+                    uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating,
+                            "#ListInstructions[" + i + "] #SaveButton",
+                            (EventData.of("Button", "SaveFunction"))
+                                    .append("FuncIndex", Integer.toString(i))
+                                    .append("RIndex", Integer.toString(4))
+                                    .append("@Name", "#ListInstructions[" + i + "] #ListFields[" + 0 + "] #Text.Value")
+                                    .append("@V1", "#ListInstructions[" + i + "] #ListFields[" + 2 + "] #Dropdown.Value")
+                                    .append("@V2", "#ListInstructions[" + i + "] #ListFields[" + 3 + "] #Dropdown.Value")
+                                    .append("@V3", "#ListInstructions[" + i + "] #ListFields[" + 4 + "] #Dropdown.Value")
+                                    .append("@V4", "#ListInstructions[" + i + "] #ListFields[" + 5 + "] #Dropdown.Value")
+                                    .append("@V5", "#ListInstructions[" + i + "] #ListFields[" + 6 + "] #Dropdown.Value"));
                 }
                 break;
             }
