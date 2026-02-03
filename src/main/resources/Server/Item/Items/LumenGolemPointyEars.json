@@ -1,0 +1,57 @@
+{
+  "Texture": "NPC/LumenBotEarsPointy.png",
+  "Model": "Items/LumenBotHeadEarsPointy.blockymodel",
+  "PlayerAnimationsId": "Block",
+  "Armor": {
+    "ArmorSlot": "Head",
+    "CosmeticsToHide": [
+      "HeadAccessory"
+    ]
+  },
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "GiveLumenGolemItemInteraction",
+          "Effects": {
+            "ItemAnimationId": "Build",
+            "WorldSoundEventId": "SFX_Ore_Hit"
+          }
+        }
+      ]
+    }
+  },
+  "Icon": "Icons/ItemsGenerated/LumenGolemPointyEars.png",
+  "IconProperties": {
+    "Scale": 0.6,
+    "Rotation": [
+      22.5,
+      61,
+      22.5
+    ],
+    "Translation": [
+      -13,
+      -68
+    ]
+  },
+  "Recipe": {
+    "BenchRequirement": [
+      {
+        "Id": "Arcanebench",
+        "Categories": [
+          "Arcane_Misc"
+        ]
+      }
+    ],
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "ItemId": "Cloth_Block_Wool_Purple_Light",
+        "Quantity": 1
+      },
+      {
+        "ItemId": "Ingredient_Bar_Iron"
+      }
+    ]
+  }
+}

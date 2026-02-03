@@ -1,0 +1,68 @@
+{
+  "Model": "Items/VectorSelector.blockymodel",
+  "Texture": "Items/VectorSelector.png",
+  "UsePlayerAnimations": true,
+  "PlayerAnimationsId": "VectorSelector",
+  "Icon": "Icons/ItemsGenerated/VectorSelector.png",
+  "IconProperties": {
+    "Scale": 1.2,
+    "Rotation": [
+      0,
+      174,
+      22.5
+    ],
+    "Translation": [
+      -3,
+      -13
+    ]
+  },
+  "Interactions": {
+    "Primary": {
+      "Interactions": [
+        {
+          "Type": "SelectVectorInteraction",
+          "Effects": {
+            "ItemPlayerAnimationsId": {},
+            "ItemAnimationId": "Shoot",
+            "LocalSoundEventId": "SFX_Creative_Play_Eyedropper_Select"
+          }
+        }
+      ]
+    },
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "Simple",
+          "Next": {
+            "Type": "ClearVectorInteraction"
+          },
+          "Effects": {
+            "ItemAnimationId": "Reset",
+            "LocalSoundEventId": "SFX_Creative_Play_Selection_Widget"
+          }
+        }
+      ]
+    }
+  },
+  "Recipe": {
+    "BenchRequirement": [
+      {
+        "Id": "Arcanebench",
+        "Categories": [
+          "Arcane_Misc"
+        ]
+      }
+    ],
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "Quantity": 2,
+        "ItemId": "Rock_Marble"
+      },
+      {
+        "ItemId": "Ingredient_Crystal_Cyan",
+        "Quantity": 1
+      }
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+$C = "../Common.ui";
+
+@ActionButtonWidth = 30;
+@ActionButtonIconSize = 24;
+
+$C.@DecoratedContainer {
+  Anchor: (Width: 500);
+  #Title {
+    Group {
+      LayoutMode: Left;
+      Anchor: (Width: 500, Left: 50);
+      Label #Name {
+        Style: LabelStyle(
+          FontSize: 15,
+          VerticalAlignment: Center,
+          RenderUppercase: true,
+          TextColor: #b4c8c9,
+          FontName: "Secondary",
+          RenderBold: true,
+          LetterSpacing: 0
+        );
+
+        FlexWeight: 1;
+      }
+    }
+    Button #DeleteButton {
+      Anchor: (Width: @ActionButtonIconSize, Right: 10);
+      TooltipText: %server.customUI.golemPage.deleteButton;
+      Style: (
+        Hovered: (
+          Background: #000000(0.2),
+        )
+      );
+
+      Group {
+        Anchor: (Width: @ActionButtonIconSize, Height: @ActionButtonIconSize);
+        Background: (TexturePath: "DeleteButton.png");
+      }
+    }
+  }
+  #Content {
+    Group #Main {
+      Group #ListFields {
+        FlexWeight: 1;
+        LayoutMode: TopScrolling;
+        ScrollbarStyle: $C.@DefaultScrollbarStyle;
+      }
+
+
+
+    }
+    Group #Buttons {
+      LayoutMode: Bottom;
+      Visible: true;
+
+      Group {
+        Anchor: (Bottom: 16, Height: 1);
+        Background: #5e512c;
+      }
+
+      $C.@TextButton #SaveButton {
+        Text: %server.customUI.saveChanges;
+      }
+    }
+  }
+}

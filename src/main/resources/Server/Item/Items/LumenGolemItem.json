@@ -1,0 +1,48 @@
+{
+  "Model": "NPC/Lumen_Bot_Item.blockymodel",
+  "Texture": "NPC/Lumen_Bot_Item.png",
+  "PlayerAnimationsId": {
+    "Parent": "Item"
+  },
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        "SpawnLumenGolemInteraction"
+      ]
+    }
+  },
+  "Icon": "Icons/ItemsGenerated/LumenGolemItem.png",
+  "IconProperties": {
+    "Scale": 0.6,
+    "Rotation": [
+      13,
+      164,
+      20
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  },
+  "Recipe": {
+    "BenchRequirement": [
+      {
+        "Id": "Arcanebench",
+        "Categories": [
+          "Arcane_Misc"
+        ]
+      }
+    ],
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "Quantity": 3,
+        "ItemId": "Rock_Marble"
+      },
+      {
+        "ItemId": "Ingredient_Crystal_Cyan",
+        "Quantity": 2
+      }
+    ]
+  }
+}

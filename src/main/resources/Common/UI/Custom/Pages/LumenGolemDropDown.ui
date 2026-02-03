@@ -1,0 +1,42 @@
+$Common = "Ripped/Common.ui";
+$Label = "Ripped/Label.ui";
+$SectionContainer = "Ripped/SectionContainer.ui";
+
+@CustomStyle = TextButtonStyle(
+  Default: (Background: $C.@DefaultSquareButtonDefaultBackground, LabelStyle: @CustomLabelStyle),
+  Hovered: (Background: $C.@DefaultSquareButtonHoveredBackground, LabelStyle: @CustomLabelStyle),
+  Pressed: (Background: $C.@DefaultSquareButtonPressedBackground, LabelStyle: @CustomLabelStyle),
+  Disabled: (Background: $C.@DefaultSquareButtonDisabledBackground, LabelStyle: @CustomLabelStyle),
+  Sounds: $C.@ButtonSounds,
+);
+
+Group {
+  LayoutMode: Left;
+
+  $SectionContainer.@SectionContainer {
+    FlexWeight: 1;
+
+    Group {
+      LayoutMode: Left;
+      Anchor: (Height: 18);
+
+      $Label.@LabelAffix #LabelPrefix {}
+      $Label.@Label #Label {}
+      $Label.@LabelAffix #LabelSuffix {}
+    }
+  }
+
+  DropdownBox #Dropdown {
+    Anchor: (Right: 0, Left: 4, Top: 0, Height: 42, Width: 194);
+    Style: DropdownBoxStyle(
+      ...$Common.@DefaultDropdownBoxStyle,
+      LabelStyle: (
+        ...$Common.@DefaultDropdownBoxLabelStyle,
+        FontSize: 15,
+        RenderBold: true
+      ),
+      PanelAlign: Bottom,
+      PanelWidth: 200
+    );
+  }
+}

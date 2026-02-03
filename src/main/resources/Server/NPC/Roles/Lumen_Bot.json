@@ -1,0 +1,19 @@
+{
+  "Type": "Variant",
+  "Reference": "Template_Lumen_Bot",
+  "Modify": {
+    "Appearance": "Lumen_Bot",
+    "DropList": "Drop_Kweebec_Sapling",
+    "MaxHealth": 74,
+    "IsMemory": false,
+    "NameTranslationKey": {
+      "Compute": "NameTranslationKey"
+    }
+  },
+  "Parameters": {
+    "NameTranslationKey": {
+      "Value": "server.npcRoles.Kweebec_Sapling.name",
+      "Description": "Translation key for NPC name display"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "Type": "SpawnLumenGolemInteraction",
+  "Effects": {
+    "WorldSoundEventId": "SFX_Ore_Break"
+  }
+}

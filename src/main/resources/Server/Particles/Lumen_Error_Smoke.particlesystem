@@ -1,0 +1,20 @@
+{
+  "Spawners": [
+    {
+      "SpawnerId": "Example_Hit_Sparks",
+      "SpawnRate": {
+        "Min": 3,
+        "Max": 3
+      },
+      "MaxConcurrent": 3,
+      "PositionOffset": {
+        "Y": 0.7
+      },
+      "LifeSpan": {
+        "Min": 60,
+        "Max": 60
+      },
+      "TotalSpawners": 3
+    }
+  ]
+}
