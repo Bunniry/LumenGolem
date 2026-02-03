@@ -513,8 +513,10 @@ public class LumenGolemComponent implements Component<EntityStore> {
         Velocity = Velocity.scale(0.95);
 
         QueuedState = "Walk";
-        if(Velocity.length() < 0.001)
+        if(Velocity.length() < 0.001 || magnitude < 0.05)
             Velocity = new Vector3d();
+        if(Velocity.length() < 0.01)
+            QueuedState = "Idle";
         if(magnitude < 3) {
             float inv_scale = (float) (1 - magnitude / 3);
             Velocity = Velocity.scale(1 - inv_scale * inv_scale);
@@ -525,7 +527,7 @@ public class LumenGolemComponent implements Component<EntityStore> {
         if(Velocity.x != 0 && Velocity.y != 0 && Velocity.z != 0) {
             result = new CollisionResult();
             Vector3d timesTwo = new Vector3d(Velocity);
-            timesTwo = timesTwo.scale(2);
+            timesTwo = Vector3d.add(Velocity, timesTwo.normalize().scale(0.2));
             CollisionModule.findBlockCollisionsShortDistance(store.getExternalData().getWorld(), box.getBoundingBox(), transformComponent.getPosition(), timesTwo, result);
 
             for (int i = 0; i < result.getBlockCollisionCount(); i++) {
@@ -543,7 +545,9 @@ public class LumenGolemComponent implements Component<EntityStore> {
 
 
         if(Velocity.length() > 0.01f) {
-            transformComponent.setRotation(new Vector3f(0, (float) Math.atan2(-Velocity.x, -Velocity.z), 0));
+            Vector3f rotation = transformComponent.getRotation();
+            rotation = Vector3f.lerp(rotation, new Vector3f(0, (float) Math.atan2(-Velocity.x, -Velocity.z), 0), 0.05f);
+            transformComponent.setRotation(rotation);
 
         }
         //transformComponent.setPosition(Vector3d.add(transformComponent.getPosition(), diff));

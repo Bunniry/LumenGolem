@@ -83,6 +83,18 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                     BakeElements(bakeType.REMOVE_VARIABLE, Integer.parseInt(data.FuncIndex), LumenInstruction.Instruction_Codec.ADD, LumenGolemComponent.Type_Codec.BOOL);
 
                 }
+                case "MoveUpVariable" ->  {
+                    BakeElements(bakeType.MOVE_UP_VARIABLE, Integer.parseInt(data.FuncIndex), LumenInstruction.Instruction_Codec.ADD, LumenGolemComponent.Type_Codec.BOOL);
+                }
+                case "MoveDownVariable" ->  {
+                    BakeElements(bakeType.MOVE_DOWN_VARIABLE, Integer.parseInt(data.FuncIndex), LumenInstruction.Instruction_Codec.ADD, LumenGolemComponent.Type_Codec.BOOL);
+                }
+                case "MoveUpFunction" ->  {
+                    BakeElements(bakeType.MOVE_UP_FUNCTION, Integer.parseInt(data.FuncIndex), LumenInstruction.Instruction_Codec.ADD, LumenGolemComponent.Type_Codec.BOOL);
+                }
+                case "MoveDownFunction" ->  {
+                    BakeElements(bakeType.MOVE_DOWN_FUNCTION, Integer.parseInt(data.FuncIndex), LumenInstruction.Instruction_Codec.ADD, LumenGolemComponent.Type_Codec.BOOL);
+                }
             }
 
         UICommandBuilder uiCommandBuilder = new UICommandBuilder();
@@ -99,6 +111,10 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
         REMOVE_FUNCTION,
         MODIFY_VARIABLE,
         MODIFY_FUNCTION,
+        MOVE_UP_VARIABLE,
+        MOVE_DOWN_VARIABLE,
+        MOVE_UP_FUNCTION,
+        MOVE_DOWN_FUNCTION,
     }
 
     void SaveFunction(Data data) {
@@ -271,6 +287,7 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                         else if (golem.instructions[i].Pointers[j] > pointer)
                             golem.instructions[i].Pointers[j]--; //Every day we get closer to Yandere Dev. Truly the epitome of coding prowess. If else if if else else...
 
+                    break;
                 case GETVECTORFLOAT:
                 case SETVECTORFLOAT:
                     for(int j = 0; j < 4; j++)
@@ -278,9 +295,83 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                             golem.instructions[i].Pointers[j] = -1;
                         else if (golem.instructions[i].Pointers[j] > pointer)
                             golem.instructions[i].Pointers[j]--;
+                    break;
             }
         }
     }
+
+    void SwapNullPointers(int pointer, int other, boolean trueifFuncfalseifVar) {
+        for(int i = 0; i < golem.instructions.length;i++) {
+            int func_start = 0;
+            int end = 0;
+
+            switch (golem.instructions[i].ID) {
+                case ADD:
+                case SUBTRACT:
+                case MULTIPLY:
+                case DIVIDE:
+                case MODULO:
+                case LESS:
+                case LESSOREQUAL:
+                case EQUALS:
+                case DISTANCE:
+                case NOTEQUAL: {
+                    func_start = 3;
+                    end = 4;
+                }
+                break;
+                case ROUND: {
+                    func_start = 2;
+                    end = 3;
+                }
+                break;
+                case IFELSE:
+                    func_start = 1;
+                    end = 3;
+
+                    break;
+                case GETPOSITION:
+                case GOTOBLOCK:
+                    func_start = 1;
+                    end = 2;
+                    break;
+                case CHOPBLOCK:
+                case MINEBLOCK:
+                case HARVESTBLOCK:
+                case DUMPALLINCHEST:
+                case PICKALLFROMCHEST:
+                case GETBLOCKID:
+                    func_start = 2;
+                    end = 3;
+                    break;
+                case GETVECTORFLOAT:
+                case SETVECTORFLOAT:
+                    func_start = 4;
+                    end = 5;
+                    break;
+                case DROPALLITEMS:
+                    func_start = 0;
+                    end = 1;
+                    break;
+            }
+            if (trueifFuncfalseifVar) {
+                for (int j = func_start; j < end; j++) {
+                    if (golem.instructions[i].Pointers[j] == pointer)
+                        golem.instructions[i].Pointers[j] = other;
+                    else if (golem.instructions[i].Pointers[j] == other)
+                        golem.instructions[i].Pointers[j] = pointer;
+                }
+            } else {
+                for (int j = 0; j < func_start; j++) {
+                    if (golem.instructions[i].Pointers[j] == pointer)
+                        golem.instructions[i].Pointers[j] = other;
+                    else if (golem.instructions[i].Pointers[j] == other)
+                        golem.instructions[i].Pointers[j] = pointer;
+                }
+            }
+        }
+    }
+
     void RemoveNullPointers_Function(int pointer) {
         for(int i = 0; i < golem.instructions.length;i++)
         {
@@ -337,6 +428,8 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                             golem.instructions[i].Pointers[j] = -1;
                         else if (golem.instructions[i].Pointers[j] > pointer)
                             golem.instructions[i].Pointers[j]--;
+
+                    break;
                 case GETVECTORFLOAT:
                 case SETVECTORFLOAT:
                     for(int j = 4; j < 5; j++)
@@ -344,12 +437,14 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                             golem.instructions[i].Pointers[j] = -1;
                         else if (golem.instructions[i].Pointers[j] > pointer)
                             golem.instructions[i].Pointers[j]--;
+                    break;
                 case DROPALLITEMS:
                     for(int j = 0; j < 1; j++)
                         if (golem.instructions[i].Pointers[j] == pointer)
                             golem.instructions[i].Pointers[j] = -1;
                         else if (golem.instructions[i].Pointers[j] > pointer)
                             golem.instructions[i].Pointers[j]--;
+                    break;
             }
         }
     }
@@ -451,6 +546,76 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
                 golem.instructions[index].Pointers = new int[]
                         {-1, -1, -1, -1, -1, -1}; //it is inefficient. yes. no, i do not care.
                 return;
+            }
+            case MOVE_UP_VARIABLE: {
+                if(index + 1 >= golem.data.length)
+                    return;
+
+                int change = 1;
+
+                Object data = golem.data[index + change];
+                LumenGolemComponent.Type_Codec type = golem.data_types[index + change];
+                String name = golem.data_names[index + change];
+
+                golem.data[index + change] = golem.data[index];
+                golem.data_types[index + change] = golem.data_types[index];
+                golem.data_names[index + change] = golem.data_names[index];
+
+                golem.data[index] = data;
+                golem.data_types[index] = type;
+                golem.data_names[index] = name;
+
+                SwapNullPointers(index, index + change, false);
+            }
+            case MOVE_DOWN_VARIABLE: {
+
+                if(index - 1 < 0)
+                    return;
+
+                int change = -1;
+
+                Object data = golem.data[index + change];
+                LumenGolemComponent.Type_Codec type = golem.data_types[index + change];
+                String name = golem.data_names[index + change];
+
+                golem.data[index + change] = golem.data[index];
+                golem.data_types[index + change] = golem.data_types[index];
+                golem.data_names[index + change] = golem.data_names[index];
+
+                golem.data[index] = data;
+                golem.data_types[index] = type;
+                golem.data_names[index] = name;
+
+                SwapNullPointers(index, index + change, false);
+            }
+            case MOVE_UP_FUNCTION: {
+
+                if(index + 1 >= golem.instructions.length)
+                    return;
+
+                int change = 1;
+
+                LumenInstruction data = golem.instructions[index + change];
+
+                golem.instructions[index + change] = golem.instructions[index];
+
+                golem.instructions[index] = data;
+
+                SwapNullPointers(index, index + change, true);
+            }
+            case MOVE_DOWN_FUNCTION: {
+                if(index - 1 < 0)
+                    return;
+
+                int change = -1;
+
+                LumenInstruction data = golem.instructions[index + change];
+
+                golem.instructions[index + change] = golem.instructions[index];
+
+                golem.instructions[index] = data;
+
+                SwapNullPointers(index, index + change, true);
             }
         }
     }
@@ -594,6 +759,12 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
 
             uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#ListInstructions[" + i + "] #DeleteButton",
                     EventData.of("Button", "DeleteFunction").append("FuncIndex", Integer.toString(i)), false);
+
+            uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#ListInstructions[" + i + "] #MoveUpButton",
+                    EventData.of("Button", "MoveDownFunction").append("FuncIndex", Integer.toString(i)), false);
+
+            uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#ListInstructions[" + i + "] #MoveDownButton",
+                    EventData.of("Button", "MoveUpFunction").append("FuncIndex", Integer.toString(i)), false);
 
 
             FunctionAddTypeDropdown("Type", i, uiCommandBuilder, uiEventBuilder);
@@ -789,6 +960,12 @@ public class GolemInterfaceUI extends InteractiveCustomUIPage<GolemInterfaceUI.D
 
             uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#ListVariables[" + i + "] #DeleteButton",
                     EventData.of("Button", "DeleteVariable").append("FuncIndex", Integer.toString(i)), false);
+
+            uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#ListVariables[" + i + "] #MoveUpButton",
+                    EventData.of("Button", "MoveDownVariable").append("FuncIndex", Integer.toString(i)), false);
+
+            uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#ListVariables[" + i + "] #MoveDownButton",
+                    EventData.of("Button", "MoveUpVariable").append("FuncIndex", Integer.toString(i)), false);
 
             VariableAddTypeDropdown("Type", i, uiCommandBuilder, uiEventBuilder);
             uiEventBuilder.addEventBinding(CustomUIEventBindingType.ValueChanged, "#ListVariables[" + i + "] #ListFields[" + (1) + "] #Dropdown",

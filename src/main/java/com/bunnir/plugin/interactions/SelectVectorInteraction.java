@@ -51,9 +51,10 @@ public class SelectVectorInteraction extends SimpleBlockInteraction {
         ModelAsset modelAsset = ModelAsset.getAssetMap().getAsset("VectorSelected");
         Model model = Model.createScaledModel(modelAsset, 2.0f);
 
-        Vector3d pos = Vector3d.add( targetBlock.toVector3d(), new Vector3d(0.5f, 0.05f, 0.5f));
+        Vector3d displayPos = Vector3d.add( targetBlock.toVector3d(), new Vector3d(0.5f, 0.05f, 0.5f));
+        Vector3d pos = Vector3d.add( targetBlock.toVector3d(), new Vector3d(0.5f, 0.5f, 0.5f));
 
-        holder.addComponent(TransformComponent.getComponentType(), new TransformComponent(pos, new Vector3f(0, 0, 0)));
+        holder.addComponent(TransformComponent.getComponentType(), new TransformComponent(displayPos, new Vector3f(0, 0, 0)));
         holder.addComponent(PersistentModel.getComponentType(), new PersistentModel(model.toReference()));
         holder.addComponent(ModelComponent.getComponentType(), new ModelComponent(model));
         holder.addComponent(BoundingBox.getComponentType(), new BoundingBox(model.getBoundingBox()));
